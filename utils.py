@@ -39,7 +39,7 @@ class Roscore(object):
             pass
 
     def launch_start(self):
-        node = roslaunch.core.Node("gs_nodes", "ros_serial_node.py", args="_port:=/dev/ttyS0")
+        node = roslaunch.core.Node("gs_core", "ros_serial_node.py", args="_port:=/dev/ttyS0")
         def dummy_function(): pass
         roslaunch.pmon._init_signal_handlers = dummy_function
         launch = roslaunch.scriptapi.ROSLaunch()

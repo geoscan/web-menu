@@ -3,9 +3,8 @@
 from rosnode import get_node_names
 from rosservice import get_service_list, get_service_type, get_service_node
 from rostopic import get_topic_list
-import os
+import os, sys, subprocess
 from time import sleep
-import subprocess
 from flask import Flask,send_file,render_template,jsonify,request
 
 app = Flask(__name__)
@@ -104,8 +103,9 @@ def get_topic():
         return jsonify(status=-1,list=[],type=[],node=[])
 
 try:
+    argv = sys.argv
     sleep(10)
-    hostname = os.popen('ip addr show eth0').read().split("inet ")[1].split("/")[0]
+    hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
     app.run(host=hostname,port=9090)
 except:
     pass

@@ -9,14 +9,6 @@
     </head>
 
     <body>
-        <!-- <h1>Geoscan Web Menu</h1>
-        <ul type='circle'>
-            <li><a href="http://{{ host }}:8090">Web-termminal</a></li>
-            <li><a href="http://{{ host }}:9090/node">ROS Node list</a></li>
-            <li><a href="http://{{ host }}:9090/service">ROS Service list</a></li>
-            <li><a href="http://{{ host }}:9090/topic">ROS Topic list</a></li>
-            <li><a href="http://{{ host }}:9999">Code-oss IDE</a></li>
-        </ul> -->
         <nav class="navbar navbar-light bg-light scroll" style="position: fixed; width: 270px; height: 100%; display: block; overflow:auto; white-space: nowrap" id="mainnav">
           <a class="navbar-brand nav-tabs">
             <img src="{{ url_for('static',filename='img/PioneerWebMenu.svg')}}" width="200" height="50"/>
@@ -278,9 +270,9 @@
             $(".myform").remove();
             function onSuccess(data){
               if(data.status==1){
-                body=body+`<button class="btn btn-outline-danger" style="margin-left: 10%; position: sticky; margin-right: 10%;" onclick="com(0)">Отключить ядро ROS</button>`;
+                body=body+`<button class="btn btn-outline-danger" style="margin-left: 10%; position: sticky; margin-right: 10%;" onclick="com(0)">Отключить ядро ROS</button><br>`;
               }else{
-                body=body+`<button class="btn btn-outline-success" style="margin-left: 10%; position: sticky; margin-right: 10%;" onclick="com(1)">Включить ядро ROS</button>`;
+                body=body+`<button class="btn btn-outline-success" style="margin-left: 10%; position: sticky; margin-right: 10%;" onclick="com(1)">Включить ядро ROS</button><br>`;
               }
               $.get(
                 "/launch_status",

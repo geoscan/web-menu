@@ -1,11 +1,12 @@
 #!/usr/bin/python3
 
+import json
 from rosnode import get_node_names
 from rosservice import get_service_list, get_service_type, get_service_node
 from rostopic import get_topic_list
 import os, sys, subprocess
 from time import sleep
-from flask import Flask,send_file,render_template,jsonify,request
+from flask import Flask,render_template,jsonify,request
 
 app = Flask(__name__)
 roscore = None
@@ -14,7 +15,10 @@ launch = None
 @app.route('/')
 def index():
     global hostname
-    return render_template('index.html',host=hostname)
+    global butterfly
+    global code
+    global bricks
+    return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks)
 
 @app.route('/com',methods=['POST'])
 def com():
@@ -105,7 +109,16 @@ def get_topic():
 try:
     argv = sys.argv
     sleep(10)
-    hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
+    with open("./static/config/ports.json","r") as f:
+        config = json.load(f)
+        if config['hostname'] == "":
+            hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
+        else:
+            hostname = config['hostname']
+
+    butterfly = config['butterfly']
+    code = config['code']
+    bricks = config['bricks']
     app.run(host=hostname,port=9090)
 except:
     pass

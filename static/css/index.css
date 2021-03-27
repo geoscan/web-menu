@@ -45,3 +45,17 @@ img {
 form {
     overflow: hidden;
 }
+
+#mytable {
+    max-height: 90%;
+    overflow: hidden;
+}
+
+#header {
+    background-color: #EC4D0F;
+    color: #fff"
+}
+
+#ros {
+    margin-top: 30px;
+}

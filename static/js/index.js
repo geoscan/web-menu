@@ -1,12 +1,109 @@
 var Navbar = ReactBootstrap.Navbar,
 Nav = ReactBootstrap.Nav,
 Button = ReactBootstrap.Button,
-Collapse = ReactBootstrap.Collapse;
+Collapse = ReactBootstrap.Collapse,
+Table = ReactBootstrap.Table;
 
 var text_for_page = {
     butterfly: "Butterfly Web Terminal - браузерная версия стандартного Linux терминала.",
     code: "Code-Oss IDE - это современная среда разработки. С его помощью можно запускать ROS систему, писать программы, отлаживать код, взаимодействовать с Linux по средству встроенного терминала, просматривать файлы.",
     bricks: "Pioneer Bricks – визуальная, блочная, браузерная среда разработки, обладающая всем функционалом современных IDE (создать файл, открыть файл, сохранить файл, консоль отладки). Данная среда прекрасно подойдет для детей, только начавших изучать программирование. Основной плюс данной среды – это простота использования, а так же моментальное исполнение программы."
+}
+
+class MyTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          error: null,
+          status: -1,
+          result: [],
+          last: null
+        };
+      }
+
+    render () {
+        const { error, status, result, last } = this.state;
+        // if (this.props.api != last){
+        fetch(this.props.api)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              this.setState({
+                status: result.status,
+                result: result.result
+              });
+            },
+            (error) => {
+              this.setState({
+                error
+              });
+            }
+          );
+        //   this.setState({
+        //       last: this.props.api
+        //   })
+        // }
+        var content_style = {
+            overflow: "hidden",
+            width: `${document.body.clientWidth - this.props.nav_ref.current.offsetWidth - 60}px`,
+            marginLeft: `${this.props.nav_ref.current.offsetWidth + 30}px`
+        };
+        
+        if (error) {
+            <div style={content_style}>
+                <h1 id="openh1">ROS ядро не запущено</h1>
+            </div>
+        } else if (status==0){    
+            return (
+                <div style={content_style}>
+                    <h1 id="openh1">Список ROS {this.props.name}</h1>
+                    <Table id="mytable" bordered >
+                        <thead id="header">
+                            <tr>
+                            {this.props.header.map((column) => (
+                                <th>{column}</th>
+                            ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {result.map((row) => (
+                                <tr>
+                                    {
+                                        row.map((content) => (
+                                            <td>{content}</td>
+                                        ))
+                                    }
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </div>
+            );
+        } else {
+            return (
+                <div style={content_style}>
+                    <h1 id="openh1">ROS ядро не запущено</h1>
+                </div>
+            );
+        }
+    }
+}
+
+class RosComponent extends React.Component {
+    render() {
+        var content_style = {
+            display: "inline-grid",
+            overflow: "hidden",
+            width: `${document.body.clientWidth - this.props.nav_ref.current.offsetWidth -60}px`,
+            marginLeft: `${this.props.nav_ref.current.offsetWidth + 30}px`
+        };
+        return (
+            <div style={content_style}>
+                <Button id="ros" variant="outline-success">Включить ядро ROS</Button>
+                <Button id="ros" variant="outline-success">Включить ROS систему</Button>
+            </div>
+        )
+    }
 }
 
 class MyNavItem extends React.Component{
@@ -74,10 +171,10 @@ class MyNav extends React.Component {
                     />
                     <Collapse in={this.state.open}>
 					    <div id="collapse-menu">
-                            <MyNavItem text="Управление ROS" class="menu-item"/>
-                            <MyNavItem text="Node List" class="menu-item"/>
-                            <MyNavItem text="Service List" class="menu-item"/>
-                            <MyNavItem text="Topic List" class="menu-item"/>
+                            <MyNavItem text="Управление ROS" class="menu-item" onclick={() => ReactDOM.render(<RosComponent nav_ref={this.myInput}/>,document.getElementById("content") )}/>
+                            <MyNavItem text="Node List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название"]} api="/node" name="Nodes"/>,document.getElementById("content"))}/>
+                            <MyNavItem text="Service List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название", "Тип", "Родительская нода"]} api="/service" name="Services"/>,document.getElementById("content"))}/>
+                            <MyNavItem text="Topic List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название", "Тип", "Публикующие Ноды"]} api="/topic" name="Topics"/>,document.getElementById("content"))}/>
                         </div>
 				    </Collapse>
                 </Nav>

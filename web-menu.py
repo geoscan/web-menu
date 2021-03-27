@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import json
+from typing import ContextManager
 from rosnode import get_node_names
 from rosservice import get_service_list, get_service_type, get_service_node
 from rostopic import get_topic_list
@@ -18,7 +19,11 @@ def index():
     global butterfly
     global code
     global bricks
-    return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks)
+    global global_net
+    if global_net == "":
+        return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks)
+    else:
+        return render_template('index.html',host=global_net, code=code, butterfly=butterfly, bricks=bricks)
 
 @app.route('/com',methods=['POST'])
 def com():
@@ -70,52 +75,47 @@ def core():
 def get_nodes():
     try:
         nodes = get_node_names()
-        return jsonify(status=0,list=nodes)
+        return jsonify(status=0,result=[nodes])
     except:
-        return jsonify(status=-1,list=[])
+        return jsonify(status=-1,result=[])
 
 @app.route('/service')
 def get_services():
     try:
         services = get_service_list()
-        m = []
-        n = []
+        content = []
         for i in services:
-            m.append(get_service_type(i))
-            n.append(get_service_node(i))
-        return jsonify(status=0,list=services,type=m,node=n)
+            content.append([i, get_service_type(i), get_service_node(i)])
+
+        return jsonify(status=0,result=content)
     except:
-        return jsonify(status=-1,list=[],type=[],node=[])
+        return jsonify(status=-1,result=[])
 
 @app.route('/topic')
 def get_topic():
     try:
         topics = get_topic_list()
-        t = []
-        m = []
-        n = []
+
+        content = []
         for i in topics[0]:
-            t.append(i[0])
-            m.append(i[1])
             k = ""
             for j in i[2]:
                 k += j + ","
             k = k[0:len(k)-1]
-            n.append(k)
-        return jsonify(status=0,list=t,type=m,node=n)
+            content.append([i[0], i[1], k])
+
+        return jsonify(status=0,result=content)
     except:
-        return jsonify(status=-1,list=[],type=[],node=[])
+        return jsonify(status=-1,result=[])
 
 try:
     argv = sys.argv
     sleep(10)
     with open("./static/config/ports.json","r") as f:
         config = json.load(f)
-        if config['hostname'] == "":
-            hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
-        else:
-            hostname = config['hostname']
 
+    hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
+    global_net = config['global']
     butterfly = config['butterfly']
     code = config['code']
     bricks = config['bricks']

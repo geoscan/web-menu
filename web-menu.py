@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import json
-from typing import ContextManager
 from rosnode import get_node_names
 from rosservice import get_service_list, get_service_type, get_service_node
 from rostopic import get_topic_list

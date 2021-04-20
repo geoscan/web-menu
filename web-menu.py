@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 
-import json
+import os, sys, json
+from time import sleep
 from rosnode import get_node_names
 from rosservice import get_service_list, get_service_type, get_service_node
 from rostopic import get_topic_list
-import os, sys, subprocess
-from time import sleep
+import subprocess
 from flask import Flask,render_template,jsonify,request
 
 app = Flask(__name__)
 roscore = None
 launch = None
+port = 9090
 
 @app.route('/')
 def index():
@@ -20,15 +21,14 @@ def index():
     global bricks
     global global_net
     if global_net == "":
-        return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks)
+        return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks, port=port)
     else:
-        return render_template('index.html',host=global_net, code=code, butterfly=butterfly, bricks=bricks)
+        return render_template('index.html',host=global_net, code=code, butterfly=butterfly, bricks=bricks, port=port)
 
-@app.route('/com',methods=['POST'])
+@app.route('/core',methods=['POST'])
 def com():
     global roscore
-    c = int(request.form['com'])
-    if(c==1):
+    if request.get_json()['command'] == 1:
         roscore = subprocess.Popen("roscore", stdout=subprocess.DEVNULL)
         return jsonify(status=1)
     else:
@@ -36,39 +36,35 @@ def com():
             roscore.terminate()
             roscore = None
         return jsonify(status=0)
-    return jsonify(status=-1)
     
-@app.route('/launch_start',methods=['POST'])
-def launch_start():
+@app.route("/launch", methods=['POST'])
+def launcher():
     global launch
-    launch = subprocess.Popen(["roslaunch","gs_core","pioneer.launch"], stdout=subprocess.DEVNULL)
-    return jsonify(status=1)
-
-@app.route('/launch_stop',methods=['POST'])
-def launch_stop():
-    global launch
-    if launch == None:
-        return jsonify(status=0)
-    else:
-        launch.terminate()
-        launch = None
+    if request.get_json()["command"] == 1:
+        launch = subprocess.Popen(["roslaunch","gs_core","pioneer.launch"], stdout=subprocess.DEVNULL)
         return jsonify(status=1)
+    elif request.get_json()["command"] == 0:
+        if launch == None:
+            return jsonify(status=0)
+        else:
+            launch.terminate()
+            launch = None
+            return jsonify(status=1)
 
-@app.route('/launch_status')
-def launch_status():
+@app.route('/status')
+def status():
     global launch
-    if launch == None:
-        return jsonify(status=0)
-    else:
-        return jsonify(status=1)
-
-@app.route('/core')
-def core():
+    core = False
     try:
         get_node_names()
-        return jsonify(status=1)
+        core = True
     except:
-        return jsonify(status=0)
+        pass
+    if launch == None:
+        return jsonify(core=int(core), launch=0)
+    else:
+        return jsonify(core=int(core), launch=1)
+    
 
 @app.route('/node')
 def get_nodes():
@@ -118,6 +114,6 @@ try:
     butterfly = config['butterfly']
     code = config['code']
     bricks = config['bricks']
-    app.run(host=hostname,port=9090)
+    app.run(host=hostname,port=port)
 except:
     pass

@@ -10,20 +10,17 @@ var text_for_page = {
     bricks: "Pioneer Bricks – визуальная, блочная, браузерная среда разработки, обладающая всем функционалом современных IDE (создать файл, открыть файл, сохранить файл, консоль отладки). Данная среда прекрасно подойдет для детей, только начавших изучать программирование. Основной плюс данной среды – это простота использования, а так же моментальное исполнение программы."
 }
 
-class MyTable extends React.Component {
+class RosTable extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-          error: null,
           status: -1,
-          result: [],
-          last: null
+          result: []
         };
-      }
+    }
 
     render () {
-        const { error, status, result, last } = this.state;
-        // if (this.props.api != last){
+        const { status, result } = this.state;
         fetch(this.props.api)
           .then(res => res.json())
           .then(
@@ -32,32 +29,20 @@ class MyTable extends React.Component {
                 status: result.status,
                 result: result.result
               });
-            },
-            (error) => {
-              this.setState({
-                error
-              });
             }
           );
-        //   this.setState({
-        //       last: this.props.api
-        //   })
-        // }
+
         var content_style = {
             overflow: "hidden",
             width: `${document.body.clientWidth - this.props.nav_ref.current.offsetWidth - 60}px`,
             marginLeft: `${this.props.nav_ref.current.offsetWidth + 30}px`
         };
         
-        if (error) {
-            <div style={content_style}>
-                <h1 id="openh1">ROS ядро не запущено</h1>
-            </div>
-        } else if (status==0){    
+        if (status==0){    
             return (
                 <div style={content_style}>
                     <h1 id="openh1">Список ROS {this.props.name}</h1>
-                    <Table id="mytable" bordered >
+                    <Table id="rostable" bordered >
                         <thead id="header">
                             <tr>
                             {this.props.header.map((column) => (
@@ -89,24 +74,118 @@ class MyTable extends React.Component {
     }
 }
 
-class RosComponent extends React.Component {
+class RosManager extends React.Component {
+    api = `http://${document.getElementById("var").getAttribute("hostname")}:${document.getElementById("var").getAttribute("port")}`
+
+    constructor(props) {
+        super(props);
+        this.state = {
+          core: -1,
+          launch: -1
+        };
+        this.roscoreClick = this.roscoreClick.bind(this);
+        this.roslaunchClick = this.roslaunchClick.bind(this);
+    }
+
+    roscoreClick() {
+        const { core, launch } = this.state;
+        var requestOption = {};
+
+        if (core == 1) {
+            requestOption = {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                   },
+                body: JSON.stringify({ command: 0})
+            };
+        }else{
+            requestOption = {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                   },
+                body: JSON.stringify({ command: 1 })
+            };
+        }
+
+        fetch(this.api+"/core", requestOption);
+    }
+
+    roslaunchClick() {
+        const { core, launch } = this.state;
+        var requestOption = {};
+
+        if (launch == 1) {
+            requestOption = {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                   },
+                body: JSON.stringify({ command: 0})
+            };
+        } else {
+            requestOption = {
+                method: "POST",
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                   },
+                body: JSON.stringify({ command: 1 })
+            };
+        }
+
+        fetch(this.api+"/launch", requestOption);
+    }
+
     render() {
+        const { core, launch } = this.state;
+        fetch(this.api+"/status")
+          .then(res => res.json())
+          .then(
+            (result) => {
+              this.setState({
+                core: result.core,
+                launch: result.launch
+              });
+            }
+          );
         var content_style = {
             display: "inline-grid",
             overflow: "hidden",
             width: `${document.body.clientWidth - this.props.nav_ref.current.offsetWidth -60}px`,
             marginLeft: `${this.props.nav_ref.current.offsetWidth + 30}px`
         };
+
+        var core_button = <Button></Button>;
+
+        if (core == 1) {
+            core_button = <Button id="roscore" variant="outline-danger" onClick={this.roscoreClick}>Выключить ядро ROS</Button>;
+        }else{
+            core_button = <Button id="roscore" variant="outline-success" onClick={this.roscoreClick}>Включить ядро ROS</Button>;
+        }
+
+        var launch_button = <Button></Button>;
+
+        if (launch == 1) {
+            launch_button = <Button id="roslaunch" variant="outline-danger" onClick={this.roslaunchClick}>Выключить ROS систему</Button>;
+        } else {
+            launch_button = <Button id="roslaunch" variant="outline-success" onClick={this.roslaunchClick}>Включить ROS систему</Button>;
+        }
+
         return (
             <div style={content_style}>
-                <Button id="ros" variant="outline-success">Включить ядро ROS</Button>
-                <Button id="ros" variant="outline-success">Включить ROS систему</Button>
+                {core_button}
+                {launch_button}
             </div>
         )
     }
 }
 
-class MyNavItem extends React.Component{
+class WebMenuNavItem extends React.Component{
     render() {
         return (
             <Nav.Item className={this.props.class}>
@@ -116,7 +195,7 @@ class MyNavItem extends React.Component{
     }
 }
 
-class MyForm extends React.Component{
+class WebAppForm extends React.Component{
     render() {
         var content_style = {
             overflow: "hidden",
@@ -138,7 +217,7 @@ class MyForm extends React.Component{
     }
 }
 
-class MyNav extends React.Component {
+class WebMenuNav extends React.Component {
     constructor(props, context) {
 		super(props, context);
 
@@ -160,10 +239,10 @@ class MyNav extends React.Component {
                     />
                 </Navbar.Brand>
                 <Nav id="menu">
-                    <MyNavItem text="Web Terminal" onclick={() => ReactDOM.render(<MyForm name="Web Terminal" app="butterfly" text={text_for_page.butterfly} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
-                    <MyNavItem text="Code-oss" onclick={() => ReactDOM.render(<MyForm name="Code-oss" app="code" text={text_for_page.code} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
-                    <MyNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<MyForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
-                    <MyNavItem
+                    <WebMenuNavItem text="Web Terminal" onclick={() => ReactDOM.render(<WebAppForm name="Web Terminal" app="butterfly" text={text_for_page.butterfly} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
+                    <WebMenuNavItem text="Code-oss" onclick={() => ReactDOM.render(<WebAppForm name="Code-oss" app="code" text={text_for_page.code} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
+                    <WebMenuNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<WebAppForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
+                    <WebMenuNavItem
                         text="ROS"
                         onclick={() => this.setState({ open: !open })}
 					    aria_controls="collapse-menu"
@@ -171,10 +250,10 @@ class MyNav extends React.Component {
                     />
                     <Collapse in={this.state.open}>
 					    <div id="collapse-menu">
-                            <MyNavItem text="Управление ROS" class="menu-item" onclick={() => ReactDOM.render(<RosComponent nav_ref={this.myInput}/>,document.getElementById("content") )}/>
-                            <MyNavItem text="Node List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название"]} api="/node" name="Nodes"/>,document.getElementById("content"))}/>
-                            <MyNavItem text="Service List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название", "Тип", "Родительская нода"]} api="/service" name="Services"/>,document.getElementById("content"))}/>
-                            <MyNavItem text="Topic List" class="menu-item" onclick={() => ReactDOM.render(<MyTable nav_ref={this.myInput} header={["Название", "Тип", "Публикующие Ноды"]} api="/topic" name="Topics"/>,document.getElementById("content"))}/>
+                            <WebMenuNavItem text="Управление ROS" class="menu-item" onclick={() => ReactDOM.render(<RosManager nav_ref={this.myInput}/>,document.getElementById("content") )}/>
+                            <WebMenuNavItem text="Список узлов" class="menu-item" onclick={() => ReactDOM.render(<RosTable nav_ref={this.myInput} header={["Название"]} api="/node" name="Nodes"/>,document.getElementById("content"))}/>
+                            <WebMenuNavItem text="Список сервисов" class="menu-item" onclick={() => ReactDOM.render(<RosTable nav_ref={this.myInput} header={["Название", "Тип", "Родительский узел"]} api="/service" name="Services"/>,document.getElementById("content"))}/>
+                            <WebMenuNavItem text="Список тем" class="menu-item" onclick={() => ReactDOM.render(<RosTable nav_ref={this.myInput} header={["Название", "Тип", "Публикующий узел"]} api="/topic" name="Topics"/>,document.getElementById("content"))}/>
                         </div>
 				    </Collapse>
                 </Nav>
@@ -187,7 +266,7 @@ class App extends React.Component {
     render() {
         return (
             <div>
-                <MyNav/>
+                <WebMenuNav/>
                 <div id="content"/>
             </div>
         );

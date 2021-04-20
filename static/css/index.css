@@ -46,7 +46,7 @@ form {
     overflow: hidden;
 }
 
-#mytable {
+#rostable {
     max-height: 90%;
     overflow: hidden;
 }
@@ -56,6 +56,6 @@ form {
     color: #fff"
 }
 
-#ros {
+#roscore, #roslaunch {
     margin-top: 30px;
 }

@@ -70,7 +70,10 @@ def status():
 def get_nodes():
     try:
         nodes = get_node_names()
-        return jsonify(status=0,result=[nodes])
+        content = []
+        for node in nodes:
+            content.append([node])
+        return jsonify(status=0,result=content)
     except:
         return jsonify(status=-1,result=[])
 
@@ -106,7 +109,7 @@ def get_topic():
 try:
     argv = sys.argv
     sleep(10)
-    with open("./static/config/ports.json","r") as f:
+    with open("/home/ubuntu/web-menu/static/config/ports.json","r") as f:
         config = json.load(f)
 
     hostname = os.popen('ip addr show {}'.format(argv[argv.index('--interface')+1])).read().split("inet ")[1].split("/")[0]
@@ -115,5 +118,5 @@ try:
     code = config['code']
     bricks = config['bricks']
     app.run(host=hostname,port=port)
-except:
-    pass
+except Exception as e:
+    print(str(e))

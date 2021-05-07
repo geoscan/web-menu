@@ -229,6 +229,21 @@ class WebMenuNav extends React.Component {
     
     render() {
         const { open } = this.state;
+        var butterfly_button = "";
+        if (document.getElementById("var").getAttribute("butterfly") != -1) {
+            butterfly_button = <WebMenuNavItem text="Web Terminal" onclick={() => ReactDOM.render(<WebAppForm name="Web Terminal" app="butterfly" text={text_for_page.butterfly} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
+        }
+
+        var pioneer_bricks = "";
+        if (document.getElementById("var").getAttribute("bricks") != -1) {
+            pioneer_bricks = <WebMenuNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<WebAppForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
+        }
+
+        var code = "";
+        if (document.getElementById("var").getAttribute("code") != -1) {
+            code = <WebMenuNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<WebAppForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
+        }
+
         return (
             <Navbar ref={this.myInput} id="mainnav" bg="light" className="scroll">
                 <Navbar.Brand>
@@ -239,9 +254,9 @@ class WebMenuNav extends React.Component {
                     />
                 </Navbar.Brand>
                 <Nav id="menu">
-                    <WebMenuNavItem text="Web Terminal" onclick={() => ReactDOM.render(<WebAppForm name="Web Terminal" app="butterfly" text={text_for_page.butterfly} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
-                    <WebMenuNavItem text="Code-oss" onclick={() => ReactDOM.render(<WebAppForm name="Code-oss" app="code" text={text_for_page.code} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
-                    <WebMenuNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<WebAppForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>
+                    {butterfly_button}
+                    {code}
+                    {pioneer_bricks}
                     <WebMenuNavItem
                         text="ROS"
                         onclick={() => this.setState({ open: !open })}

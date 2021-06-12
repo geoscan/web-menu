@@ -241,7 +241,7 @@ class WebMenuNav extends React.Component {
 
         var code = "";
         if (document.getElementById("var").getAttribute("code") != -1) {
-            code = <WebMenuNavItem text="Pioneer Bricks" onclick={() => ReactDOM.render(<WebAppForm name="Pioneer Bricks" app="bricks" text={text_for_page.bricks} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
+            code = <WebMenuNavItem text="Code-Oss" onclick={() => ReactDOM.render(<WebAppForm name="Code-oss" app="code" text={text_for_page.code} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
         }
 
         return (

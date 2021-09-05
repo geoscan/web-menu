@@ -7,7 +7,8 @@ Table = ReactBootstrap.Table;
 var text_for_page = {
     butterfly: "Butterfly Web Terminal - браузерная версия стандартного Linux терминала.",
     code: "Code-Oss IDE - это современная среда разработки. С его помощью можно запускать ROS систему, писать программы, отлаживать код, взаимодействовать с Linux по средству встроенного терминала, просматривать файлы.",
-    bricks: "Pioneer Bricks – визуальная, блочная, браузерная среда разработки, обладающая всем функционалом современных IDE (создать файл, открыть файл, сохранить файл, консоль отладки). Данная среда прекрасно подойдет для детей, только начавших изучать программирование. Основной плюс данной среды – это простота использования, а так же моментальное исполнение программы."
+    bricks: "Pioneer Bricks – визуальная, блочная, браузерная среда разработки, обладающая всем функционалом современных IDE (создать файл, открыть файл, сохранить файл, консоль отладки). Данная среда прекрасно подойдет для детей, только начавших изучать программирование. Основной плюс данной среды – это простота использования, а так же моментальное исполнение программы.",
+    mission: "Mission Control - браузерный инструмент для подготовки Пионер Макс к АФС. С его помощью можно подключить Пионер Макс к QGroundControl."
 }
 
 class RosTable extends React.Component {
@@ -244,6 +245,11 @@ class WebMenuNav extends React.Component {
             code = <WebMenuNavItem text="Code-Oss" onclick={() => ReactDOM.render(<WebAppForm name="Code-oss" app="code" text={text_for_page.code} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
         }
 
+        var mission = "";
+        if (document.getElementById("var").getAttribute("mission") != -1) {
+            mission = <WebMenuNavItem text="Mission Control" onclick={() => ReactDOM.render(<WebAppForm name="Mission Control" app="mission" text={text_for_page.mission} nav_ref={this.myInput}/>, document.getElementById("content"))}/>;
+        }
+
         return (
             <Navbar ref={this.myInput} id="mainnav" bg="light" className="scroll">
                 <Navbar.Brand>
@@ -257,6 +263,7 @@ class WebMenuNav extends React.Component {
                     {butterfly_button}
                     {code}
                     {pioneer_bricks}
+                    {mission}
                     <WebMenuNavItem
                         text="ROS"
                         onclick={() => this.setState({ open: !open })}

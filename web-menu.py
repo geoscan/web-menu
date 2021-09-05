@@ -21,9 +21,9 @@ def index():
     global bricks
     global global_net
     if global_net == "":
-        return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks, port=port)
+        return render_template('index.html',host=hostname, code=code, butterfly=butterfly, bricks=bricks, mission=mission, port=port)
     else:
-        return render_template('index.html',host=global_net, code=code, butterfly=butterfly, bricks=bricks, port=port)
+        return render_template('index.html',host=global_net, code=code, butterfly=butterfly, bricks=bricks, mission=mission, port=port)
 
 @app.route('/core',methods=['POST'])
 def com():
@@ -117,6 +117,7 @@ try:
     butterfly = config['butterfly']
     code = config['code']
     bricks = config['bricks']
+    mission = config['mission']
     app.run(host=hostname,port=port)
 except Exception as e:
     print(str(e))

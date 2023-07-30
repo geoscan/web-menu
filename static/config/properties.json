@@ -1,0 +1,53 @@
+{
+    "GPS" : {
+        "BoardPioneer_modules_gnss" : 1.0,
+        "Imu_magEnabled" : 1,
+        "SensorMux_gnss" : 255.0,
+        "Copter_man_velScale" : 5,
+        "Copter_man_vzScale" : 5,
+        "Copter_pos_vDesc" : 0.7,
+        "Copter_pos_vDown" : 1,
+        "Copter_pos_vLanding" : 0.5,
+        "Copter_pos_vMax" : 2,
+        "Copter_pos_vTakeoff" : 0.5,
+        "Copter_pos_vUp" : 1,
+        "Flight_com_homeAlt" : 1.5,
+        "Flight_com_landingAlt" : 1,
+        "Flight_com_navSystem" : 0,
+        "State_startCount" : 92
+    },
+    "LPS" : {
+        "BoardPioneer_modules_gnss" : 0,
+        "Imu_magEnabled" : 0.0,
+        "SensorMux_gnss" : 0.0,
+        "Copter_man_velScale" : 0.5,
+        "Copter_man_vzScale" : 0.5,
+        "Copter_pos_vDesc" : 0.4,
+        "Copter_pos_vDown" : 0.7,
+        "Copter_pos_vLanding" : 0.3,
+        "Copter_pos_vMax" : 1,
+        "Copter_pos_vTakeoff" : 0.3,
+        "Copter_pos_vUp" : 0.5,
+        "Flight_com_homeAlt" : 0.5,
+        "Flight_com_landingAlt" : 0,
+        "Flight_com_navSystem" : 1,
+        "State_startCount" : 90
+    },
+    "OPT" : {
+        "BoardPioneer_modules_gnss" : 0.0,
+        "Imu_magEnabled" : 0,
+        "SensorMux_gnss" : 0.0,
+        "Copter_man_velScale" : 0.5,
+        "Copter_man_vzScale" : 0.5,
+        "Copter_pos_vDesc" : 0.4,
+        "Copter_pos_vDown": 0.5,
+        "Copter_pos_vLanding" : 0.3,
+        "Copter_pos_vMax" : 0.4,
+        "Copter_pos_vTakeoff" : 0.3,
+        "Copter_pos_vUp" : 0.5,
+        "Flight_com_homeAlt" : 0.5,
+        "Flight_com_landingAlt" : 0,
+        "Flight_com_navSystem" : 2,
+        "State_startCount" : 93
+    }
+}

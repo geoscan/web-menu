@@ -1,0 +1,8 @@
+{
+    "hostname" : "0.0.0.0",
+    "port" : 9090,
+    "autopilot": {
+        "serial" : "/dev/ttyTHS1",
+        "baudrate" : 57600
+    } 
+}

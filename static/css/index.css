@@ -1,7 +1,7 @@
 #mainnav {
     position: fixed;
     min-width: 170px;
-    max-width: 20%;
+    max-width: 18%;
     height: 100%;
     display: block;
     overflow: auto;
@@ -29,6 +29,7 @@ img {
 }
 
 #openh1 {
+    margin-top: 5pt;
     text-align: center;
 }
 
@@ -51,11 +52,27 @@ form {
     overflow: hidden;
 }
 
-#header {
+#header > tr > th {
     background-color: #EC4D0F;
-    color: #fff"
 }
 
-#roscore, #roslaunch {
+#roscore, #roslaunch, #restart_button {
     margin-top: 30px;
+}
+
+#upload {
+    width: 100%;
+}
+
+#logo {
+    margin-top: 5pt;
+}
+
+#param_menu {
+    margin-top: 5pt;
+    margin-bottom: 5pt;
+}
+
+#param_menu > button {
+    margin-right: 10pt;
 }

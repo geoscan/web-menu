@@ -11,11 +11,14 @@
     </head>
 
     <body>
-    <div id="var" hostname="{{ host }}" butterfly="{{ butterfly }}" code="{{ code }}" bricks="{{ bricks }}" mission="{{ mission }}" port="{{ port }}"></div>
+    <div id="var" hostname="{{ host }}" port="{{ port }}"></div>
+    <script src="{{ url_for('static',filename='js/axios.min.js') }}"></script>
       <script src="{{ url_for('static',filename='js/react.production.min.js') }}" crossorigin></script>
       <script src="{{ url_for('static',filename='js/react-dom.production.min.js') }}" crossorigin></script>
       <script src="{{ url_for('static',filename='js/react-bootstrap.min.js') }}" crossorigin></script>
+      <script src="{{ url_for('static',filename='js/socket.io.min.js') }}" crossorigin></script>
       <script src="{{ url_for('static',filename='js/babel.min.js') }}"></script>
+
       <div id="root">
       </div>
       <script src="{{ url_for('static',filename='js/index.js') }}" type="text/babel"></script>

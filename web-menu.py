@@ -40,7 +40,6 @@ class WebMenuServer:
             self._manager = None
         else:
             self._manager = AutopilotManger(config['autopilot']['serial'], config['autopilot']['baudrate'])
-            self._manager.connect()
 
     def __add_endpoint(self, endpoint="", handler=None, methods=['GET'], socketio=False):
         if socketio:
@@ -67,6 +66,8 @@ class WebMenuServer:
         self.__add_endpoint("/service", self.get_services, socketio=True)
         self.__add_endpoint("/topic", self.get_topic, socketio=True)
         self.__add_endpoint("/progress", self.progress, socketio=True)
+        if not self._debug_ros:
+            self._manager.connect()
         self._socketio.run(self._app, host=self._hostname, port=self._port, debug=True)
 
     def index(self):

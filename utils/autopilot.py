@@ -1,19 +1,20 @@
 from proto import Messenger, SerialStream
-from threading import Thread
 from time import sleep
 
 class AutopilotManger:
     def __init__(self, port='/dev/ttyS0', baud=57600):
         self.__port = port
         self.__baud = baud
-        self._serial = SerialStream(self.__port, self.__baud)
-        self._messenger = Messenger(self._serial)
+        self._serial = None
+        self._messenger = None
         self._connection = False
         self._params = []
 
         self.__update_threading = False
 
     def connect(self):
+        self._serial = SerialStream(self.__port, self.__baud)
+        self._messenger = Messenger(self._serial)
         self._messenger.connect()
         self._params = self.get_params()
 
@@ -47,11 +48,14 @@ class AutopilotManger:
     
     def restart(self):
         self._messenger.hub.sendCommand(18)
-        # self.disconnect()
+        self.disconnect()
+        sleep(5)
+        self.connect()
 
     def disconnect(self):
         self._messenger.stop()
         self._messenger.handler.stream.socket.close()
+        self._messenger = None
 
     def get_params(self):
         params = []
@@ -64,4 +68,9 @@ class AutopilotManger:
         for param in params:
             for ap_param in self._params:
                 if ap_param[0] == param[0] and ap_param[1] != param[1]:
-                    self._messenger.hub.setParam(name = param[0], value = float(param[1]))
+                    try:
+                        self._messenger.hub.setParam(name = param[0], value = float(param[1]))
+                    except Exception as e:
+                        print(str(e))
+
+        self._params = self.get_params()

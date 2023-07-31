@@ -500,7 +500,7 @@ class ApControl extends React.Component {
         return (
             <div style={content_style}>
                 <h1 id="openh1">Управление автопилотом</h1>
-                <ToggleButtonGroup type="radio" name="options" defaultValue={current} onChange={this.onChangeNav}>
+                <ToggleButtonGroup key={new Date().getTime()} type="radio" name="options" defaultValue={current} onChange={this.onChangeNav}>
                         <ToggleButton id="tbg-radio-1" value={0}>
                         {systems[0]}
                         </ToggleButton>

@@ -235,7 +235,6 @@ class WebMenuServer:
                 current = request.get_json()['current']
                 system_param = params_raw[list(params_raw)[current]]
                 param = [[key, system_param[key]] for key in params_raw[list(params_raw)[current]]]
-
                 self._manager.set_params(param)
                 self._manager.restart()
                 return Response(status=200)
@@ -243,9 +242,13 @@ class WebMenuServer:
                 current = 0
                 for param in self._manager._params:
                     if param[0] == "Flight_com_navSystem":
-                        current = param[1]
+                        current = int(param[1])
                         break
                 return jsonify(systems=list(params_raw), current=current)
+            
+    def close(self):
+        if not self._debug_ros:
+            self._manager.disconnect()
 
 if __name__ == '__main__':
     from utils.file import get_path
@@ -255,12 +258,11 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--debug", action="store_true")
     parser.add_argument("-dr", "--debug_ros", action="store_true")
     args = parser.parse_args()
-    try:
-        if not args.debug:
+    if not args.debug:
             sleep(10)
-        config_path = f"{get_path()}/static/config/"
-
-        web_menu = WebMenuServer(config_path, args.debug_ros)
+    config_path = f"{get_path()}/static/config/"
+    web_menu = WebMenuServer(config_path, args.debug_ros)
+    try:
         web_menu.run()
     except Exception as e:
-        print(str(e))
+        web_menu.close()

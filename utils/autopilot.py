@@ -9,11 +9,13 @@ class AutopilotManger:
         self._serial = SerialStream(self.__port, self.__baud)
         self._messenger = Messenger(self._serial)
         self._connection = False
+        self._params = []
 
         self.__update_threading = False
 
     def connect(self):
         self._messenger.connect()
+        self._params = self.get_params()
 
     def get_uav_file(self):
         if not self._connection:
@@ -45,7 +47,7 @@ class AutopilotManger:
     
     def restart(self):
         self._messenger.hub.sendCommand(18)
-        self.disconnect()
+        # self.disconnect()
 
     def disconnect(self):
         self._messenger.stop()
@@ -59,8 +61,7 @@ class AutopilotManger:
         return params
     
     def set_params(self, params):
-        ap_params = self.get_params()
         for param in params:
-            for ap_param in ap_params:
+            for ap_param in self._params:
                 if ap_param[0] == param[0] and ap_param[1] != param[1]:
                     self._messenger.hub.setParam(name = param[0], value = float(param[1]))

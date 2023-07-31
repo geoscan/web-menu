@@ -401,7 +401,7 @@ class ParamTable extends React.Component {
                         {result[i][0]}
                     </td>
                     <td>
-                        <Form.Control id={`${i}`} type="number" step="any" defaultValue={result[i][1]} onChange={this.onValueChange}/>
+                        <Form.Control key={new Date().getTime()} id={`${i}`} type="number" step="any" defaultValue={result[i][1]} onChange={this.onValueChange}/>
                     </td>
                 </tr>
             );

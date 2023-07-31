@@ -36,6 +36,11 @@ class WebMenuServer:
         self.__ap_serial = config['autopilot']['serial']
         self.__ap_baud = config['autopilot']['baudrate']
         self.__progress = 0
+        if self._debug_ros:
+            self._manager = None
+        else:
+            self._manager = AutopilotManger(config['autopilot']['serial'], config['autopilot']['baudrate'])
+            self._manager.connect()
 
     def __add_endpoint(self, endpoint="", handler=None, methods=['GET'], socketio=False):
         if socketio:
@@ -186,9 +191,7 @@ class WebMenuServer:
                     sio.sleep(0.05)
             self._socketio.start_background_task(lambda: callback(self, self._socketio))
         else:
-            manager = AutopilotManger(self.__ap_serial, self.__ap_baud)
-            manager.connect()
-            self._socketio.start_background_task(lambda : manager.upload_ap(self._socketio, file, self.__update_progress))
+            self._socketio.start_background_task(lambda : self._manager.upload_ap(self._socketio, file, self.__update_progress))
         return Response(status=200)
     
     def progress(self):
@@ -201,22 +204,16 @@ class WebMenuServer:
             else:
                 return jsonify(params=[['Param1', 0]])
         else:
-            manager = AutopilotManger(self.__ap_serial, self.__ap_baud)
-            manager.connect()
             if request.method == 'POST':
-                manager.set_params(request.get_json())
-                manager.restart()
+                self._manager.set_params(request.get_json())
+                self._manager.restart()
             else:
-                params = manager.get_params()
-                manager.disconnect()
-                return jsonify(params=params)
+                return jsonify(params=self._manager._params)
         return Response(status=200)
 
     def restart(self):
         if not self._debug_ros:
-            manager = AutopilotManger(self.__ap_serial, self.__ap_baud)
-            manager.connect()
-            manager.restart()
+            self._manager.restart()
         return Response(status=200)
     
     def navigation_system(self):
@@ -233,23 +230,20 @@ class WebMenuServer:
                 print(params_raw.keys())
                 return jsonify(systems=list(params_raw), current=0)
         else:
-            manager = AutopilotManger(self.__ap_serial, self.__ap_baud)
-            manager.connect()
             if request.method == 'POST':
                 current = request.get_json()['current']
                 system_param = params_raw[list(params_raw)[current]]
                 param = [[key, system_param[key]] for key in params_raw[list(params_raw)[current]]]
 
-                manager.set_params(request.get_json())
-                manager.restart()
+                self._manager.set_params(param)
+                self._manager.restart()
                 return Response(status=200)
             else:
                 current = 0
-                for param in manager.get_params():
+                for param in self._manager._params:
                     if param[0] == "Flight_com_navSystem":
                         current = param[1]
                         break
-                manager.disconnect()
                 return jsonify(systems=list(params_raw), current=current)
 
 if __name__ == '__main__':

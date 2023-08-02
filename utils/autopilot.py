@@ -1,4 +1,4 @@
-from proto import Messenger, SerialStream
+# from proto import Messenger, SerialStream
 from time import sleep
 
 class AutopilotManger:
@@ -17,6 +17,7 @@ class AutopilotManger:
         self._messenger = Messenger(self._serial)
         self._messenger.connect()
         self._params = self.get_params()
+        self._connection = True
 
     def get_uav_file(self):
         if not self._connection:
@@ -49,13 +50,14 @@ class AutopilotManger:
     def restart(self):
         self._messenger.hub.sendCommand(18)
         self.disconnect()
-        sleep(5)
-        self.connect()
+        # sleep(5)
+        # self.connect()
 
     def disconnect(self):
         self._messenger.stop()
         self._messenger.handler.stream.socket.close()
         self._messenger = None
+        self._connection = False
 
     def get_params(self):
         params = []

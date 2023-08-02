@@ -2,9 +2,9 @@
 
 import json
 from time import sleep
-from rosnode import get_node_names
-from rosservice import get_service_list, get_service_type, get_service_node
-from rostopic import get_topic_list
+# from rosnode import get_node_names
+# from rosservice import get_service_list, get_service_type, get_service_node
+# from rostopic import get_topic_list
 import subprocess
 from flask import Flask, render_template, jsonify, request, Response
 from flask_socketio import SocketIO, emit
@@ -68,6 +68,7 @@ class WebMenuServer:
         self.__add_endpoint("/progress", self.progress, socketio=True)
         if not self._debug_ros:
             self._manager.connect()
+            self._manager.disconnect()
         self._socketio.run(self._app, host=self._hostname, port=self._port, debug=True)
 
     def index(self):
@@ -182,9 +183,17 @@ class WebMenuServer:
         print(percent)
         self.__progress = percent
 
+    def __update_ap_task(self, file):
+        self._manager.connect()
+        self._manager.upload_ap(self._socketio, file, self.__update_progress)
+        self._manager.disconnect()
+
     def update_ap(self):
+        if self._launch is not None:
+            return Response(status=403)
         for name in request.files.keys():
             file = b''.join(request.files[name].stream.readlines())
+        print(file)
         if self._debug_ros:
             def callback(object, sio):
                 for i in range(101):
@@ -192,7 +201,7 @@ class WebMenuServer:
                     sio.sleep(0.05)
             self._socketio.start_background_task(lambda: callback(self, self._socketio))
         else:
-            self._socketio.start_background_task(lambda : self._manager.upload_ap(self._socketio, file, self.__update_progress))
+            self._socketio.start_background_task(lambda: self.__update_ap_task(file))
         return Response(status=200)
     
     def progress(self):
@@ -201,11 +210,16 @@ class WebMenuServer:
     def params(self):
         if self._debug_ros:
             if request.method == 'POST':
+                if self._launch is not None:
+                    return Response(status=403)
                 print(request.get_json())
             else:
                 return jsonify(params=[['Param1', 0]])
         else:
             if request.method == 'POST':
+                if self._launch is not None:
+                    return Response(status=403)
+                self._manager.connect()
                 self._manager.set_params(request.get_json())
                 self._manager.restart()
             else:
@@ -213,7 +227,10 @@ class WebMenuServer:
         return Response(status=200)
 
     def restart(self):
+        if self._launch is not None:
+            return Response(status=403)
         if not self._debug_ros:
+            self._manager.connect()
             self._manager.restart()
         return Response(status=200)
     
@@ -222,6 +239,8 @@ class WebMenuServer:
         
         if self._debug_ros:
             if request.method == 'POST':
+                if self._launch is not None:
+                    return Response(status=403)
                 current = request.get_json()['current']
                 system_param = params_raw[list(params_raw)[current]]
                 param = [[key, system_param[key]] for key in params_raw[list(params_raw)[current]]]
@@ -232,9 +251,12 @@ class WebMenuServer:
                 return jsonify(systems=list(params_raw), current=0)
         else:
             if request.method == 'POST':
+                if self._launch is not None:
+                    return Response(status=403)
                 current = request.get_json()['current']
                 system_param = params_raw[list(params_raw)[current]]
                 param = [[key, system_param[key]] for key in params_raw[list(params_raw)[current]]]
+                self._manager.connect()
                 self._manager.set_params(param)
                 self._manager.restart()
                 return Response(status=200)

@@ -236,10 +236,33 @@ class ApUpdate extends React.Component {
             this.state.selectedFile,
             this.state.selectedFile.name
         );
-        this.setState({ upload : true});
-        axios.post("/update", formData);
-        this.socket.on('response', this.updateState);
-        this.socket.emit("get");
+        fetch("/update", {
+            method: 'POST',
+            body: formData
+          })
+        .then(response => {
+            if (response.ok) {
+                this.setState({ upload : true});
+                this.socket.on('response', this.updateState);
+                this.socket.emit("get");
+            }
+            else if (response.status == 403)
+            {
+                alert("Обновление прервано. Убедитесь, что ROS система выключена");
+            }
+        });
+        // axios.post("/update", formData).catch(function (error) {console.log(error.response.status)});
+            // .then(function (response) {
+            //     if (response.status == 200)
+            //     {
+            //         this.socket.on('response', this.updateState);
+            //         this.socket.emit("get");
+            //     }
+            //     else if (response.status == 403)
+            //     {
+            //         alert("Обновление прервано. Убедитесь, что ROS система выключена");
+            //     }
+            // });
     }
 
     updateState(data)
@@ -332,8 +355,16 @@ class ParamTable extends React.Component {
             body: JSON.stringify(this.state.result)
         };
 
-        fetch("/params", requestOption);
-        alert("Параметры обновлены. Плата будет перезагружена");
+        fetch("/params", requestOption)
+            .then(response => {
+                if (response.ok) {
+                    alert("Параметры обновлены. Плата будет перезагружена");
+                }
+                else if (response.status == 403)
+                {
+                    alert("Параметры не обновлены. Убедитесь, что ROS система выключена");
+                }
+            });
     }
 
     onClickSave()
@@ -470,8 +501,18 @@ class ApControl extends React.Component {
             body: JSON.stringify({current : event})
         };
 
-        fetch("/navigation", requestOption);
-        alert("Система позиционирования установлена. Плата будет перезагружена");
+        fetch("/navigation", requestOption)
+            .then(response =>
+                {
+                    if (response.ok) {
+                        alert("Система позиционирования установлена. Плата будет перезагружена");
+                    }
+                    else if (response.status == 403)
+                    {
+                        alert("Ситема позиционирования не устанволена. Убедитесь, что ROS система выключена");
+                    }
+                });
+        
     }
 
     onClickRestart()
@@ -483,8 +524,17 @@ class ApControl extends React.Component {
                 'Accept': 'application/json'
                }
         };
-        fetch('/restart', requestOption);
-        alert("Плата будет перезагружена");
+        fetch('/restart', requestOption)
+        .then(response =>
+            {
+                if (response.ok) {
+                    alert("Плата будет перезагружена");
+                }
+                else if (response.status == 403)
+                {
+                    alert("Плата не будет перезагружена. Убедитесь, что ROS система выключена");
+                }
+            });
     }
 
     render() {

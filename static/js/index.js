@@ -479,7 +479,6 @@ class ApControl extends React.Component {
 
 
     onChangeNav = event => {
-        this.setState({current : event});
         var requestOption = {
             method: "POST",
             headers: { 
@@ -494,6 +493,7 @@ class ApControl extends React.Component {
                 {
                     if (response.ok) {
                         alert("Система позиционирования установлена. Плата будет перезагружена");
+                        this.setState({current : event});
                     }
                     else if (response.status == 403)
                     {

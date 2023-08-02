@@ -193,7 +193,7 @@ class WebMenuServer:
             return Response(status=403)
         for name in request.files.keys():
             file = b''.join(request.files[name].stream.readlines())
-        print(file)
+        
         if self._debug_ros:
             def callback(object, sio):
                 for i in range(101):

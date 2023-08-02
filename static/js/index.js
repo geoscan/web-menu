@@ -251,18 +251,6 @@ class ApUpdate extends React.Component {
                 alert("Обновление прервано. Убедитесь, что ROS система выключена");
             }
         });
-        // axios.post("/update", formData).catch(function (error) {console.log(error.response.status)});
-            // .then(function (response) {
-            //     if (response.status == 200)
-            //     {
-            //         this.socket.on('response', this.updateState);
-            //         this.socket.emit("get");
-            //     }
-            //     else if (response.status == 403)
-            //     {
-            //         alert("Обновление прервано. Убедитесь, что ROS система выключена");
-            //     }
-            // });
     }
 
     updateState(data)

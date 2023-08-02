@@ -2,9 +2,9 @@
 
 import json
 from time import sleep
-# from rosnode import get_node_names
-# from rosservice import get_service_list, get_service_type, get_service_node
-# from rostopic import get_topic_list
+from rosnode import get_node_names
+from rosservice import get_service_list, get_service_type, get_service_node
+from rostopic import get_topic_list
 import subprocess
 from flask import Flask, render_template, jsonify, request, Response
 from flask_socketio import SocketIO, emit

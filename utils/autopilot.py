@@ -1,4 +1,4 @@
-# from proto import Messenger, SerialStream
+from proto import Messenger, SerialStream
 from time import sleep
 
 class AutopilotManger:
